@@ -1,0 +1,5 @@
+.scroll-to-future__overlay {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10;
+}

@@ -1,0 +1,55 @@
+{
+    "name": "@ssaprt/easy-pagination",
+    "version": "1.0.9",
+    "description": "",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "sideEffects": [
+        "*.css",
+        "dist/*.css"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        },
+        "./style.css": "./dist/index.css"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "push": "npm run build && npx yalc push"
+    },
+    "keywords": [
+        "scrollbar",
+        "scroll",
+        "react",
+        "next",
+        "scroller",
+        "custom-scrollbar",
+        "custom-scroll",
+        "x-y-scroll"
+    ],
+    "author": "ssaprt (Denis Ukhan)",
+    "license": "MIT",
+    "type": "commonjs",
+    "peerDependencies": {
+        "mobx": ">=6",
+        "mobx-react-lite": ">=4",
+        "react": ">=18"
+    },
+    "devDependencies": {
+        "@types/react": "^19.2.17",
+        "@types/react-dom": "^19.2.3",
+        "react": "^19.2.7",
+        "tsup": "^8.5.1",
+        "typescript": "^6.0.3"
+    }
+}
