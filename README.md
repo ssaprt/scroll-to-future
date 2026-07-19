@@ -20,29 +20,28 @@ A customizable React scrollbar component with vertical and horizontal scrolling,
 * React and Next.js compatible
 
 # 20+ Themes in box
-type PresetsThemeType =
-    | "primary"
-    | "midnight"
-    | "neonCyan"
-    | "ocean"
-    | "deepSea"
-    | "forest"
-    | "moss"
-    | "lava"
-    | "ember"
-    | "gold"
-    | "roseQuartz"
-    | "violet"
-    | "royal"
-    | "arctic"
-    | "glass"
-    | "graphite"
-    | "terminal"
-    | "toxic"
-    | "candy"
-    | "sand"
-    | "monoLight"
-    | "monoDark";
+* "primary"
+* "midnight"
+* "neonCyan"
+* "ocean"
+* "deepSea"
+* "forest"
+* "moss"
+* "lava"
+* "ember"
+* "gold"
+* "roseQuartz"
+* "violet"
+* "royal"
+* "arctic"
+* "glass"
+* "graphite"
+* "terminal"
+* "toxic"
+* "candy"
+* "sand"
+* "monoLight"
+* "monoDark";
 
 ## Installation
 
