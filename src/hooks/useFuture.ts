@@ -129,16 +129,7 @@ export const useFuture = ({
 
     useEffect(() => {
         if (!findedTarget) return;
-
         const mode = config.scrollBar?.hideNativeScrollbar ?? false;
-
-        console.log("native scrollbar effect:", {
-            mode,
-            nativeOnMobile,
-            coversAllScrollableAxes,
-            target: findedTarget,
-        });
-
         if (mode === false || !coversAllScrollableAxes) {
             return;
         }

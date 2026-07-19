@@ -27,10 +27,6 @@ export const ScrollToFuture = ({
     const [findedTarget, setFindedTarget] = useState<HTMLElement | null>(null);
 
     const config = merge({ scrollBar, thumb, selectTheme, optionsTheme });
-    console.log("hideNativeScrollbar:", {
-        original: scrollBar.hideNativeScrollbar,
-        merged: config.scrollBar.hideNativeScrollbar,
-    });
     const vars = variables(config.optionsTheme);
     const mode = config.scrollBar?.mode ?? "both";
     const positionMode = config.scrollBar?.positionMode ?? "after";
