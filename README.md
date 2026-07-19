@@ -63,6 +63,8 @@ pnpm add scroll-to-future
 ### Improt styles
 ```bash
 import 'scroll-to-future/style.css';
+```
+
 
 The scroll container must have a constrained size and an `overflow` value such as `auto` or `scroll`.
 
