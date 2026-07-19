@@ -1,6 +1,6 @@
 {
-    "name": "@ssaprt/easy-pagination",
-    "version": "1.0.9",
+    "name": "scroll-to-future",
+    "version": "1.0.0",
     "description": "",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
@@ -41,8 +41,6 @@
     "license": "MIT",
     "type": "commonjs",
     "peerDependencies": {
-        "mobx": ">=6",
-        "mobx-react-lite": ">=4",
         "react": ">=18"
     },
     "devDependencies": {

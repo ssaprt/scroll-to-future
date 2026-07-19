@@ -1,7 +1,7 @@
+import { presets } from "../themes/preset";
 import { ScrollToFutureScrollBar } from "../types/config/scrollbar.type";
 import { ScrollToFutureThumb } from "../types/config/thumb.type";
 import { ScrollToFutureInterface } from "../types/scroll-to-future.type";
-import { presets } from "../types/theme/preset/preset";
 import { ScrollToFutureThemeProps } from "../types/theme/scroll-to-future.theme.type";
 import { defaultConfig } from "./config";
 

@@ -1,13 +1,13 @@
 import type React from "react";
 import { useRef, useState } from "react";
-import { Axis, AxisMetrics } from "../types/config/axis.type";
+import { Axis, AxisMetrics } from "src/types/config/axis.type";
 import {
     PositionMode,
     ScrollToFutureScrollBar,
     Superimposition,
-} from "../types/config/scrollbar.type";
-import { ScrollToFutureThumb } from "../types/config/thumb.type";
-import { DEFAULT_TRACK_THICKNESS } from "../utils/constants";
+} from "src/types/config/scrollbar.type";
+import { ScrollToFutureThumb } from "src/types/config/thumb.type";
+import { DEFAULT_TRACK_THICKNESS } from "src/utils/constants";
 import {
     clamp,
     computeThumbPosition,
@@ -18,7 +18,7 @@ import {
     parsePxValue,
     resolveTrackLength,
     trackPositionToScroll,
-} from "../utils/helper";
+} from "src/utils/helper";
 
 interface ScrollAxisProps {
     axis: Axis;

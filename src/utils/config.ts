@@ -8,12 +8,15 @@ export const defaultConfig: Required<Omit<ScrollToFutureInterface, "target">> =
             superimposition: "after",
             boundaryOffset: "4px",
             heightTrack: "98%",
+            hideNativeScrollbar: "always",
         },
 
         thumb: {
             boundaryOffset: "1px 1px",
             heightTrack: "auto",
         },
+
+        nativeOnMobile: true,
 
         selectTheme: "primary",
         optionsTheme: {},

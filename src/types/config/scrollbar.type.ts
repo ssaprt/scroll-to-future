@@ -11,8 +11,11 @@ export type ScrollBarMode = "horizontal" | "vertical" | "both";
 export type PositionMode = "before" | "after";
 export type Superimposition = "over" | "after";
 
+export type HideNativeScrollbarMode = false | "fine-pointer" | "always";
+
 export interface ScrollToFutureScrollBar {
     mode?: ScrollBarMode;
+    hideNativeScrollbar?: HideNativeScrollbarMode;
     positionMode?: PositionMode;
     superimposition?: Superimposition;
     boundaryOffset?: BoundaryOffset;
