@@ -58,12 +58,20 @@ export const ScrollToFuture = ({
         nativeOnMobile,
     });
 
+    console.log({
+        target: findedTarget?.getBoundingClientRect().left,
+        overlay: rect.left,
+    });
+
     if (!mounted || nativeScrollOnMobile) {
         return null;
     }
 
     const canRenderOverlay =
-        findedTarget !== null && rect.width > 0 && rect.height > 0;
+        findedTarget !== null &&
+        rect.width > 0 &&
+        rect.height > 0 &&
+        rect.isVisible;
 
     return (
         <>
@@ -83,6 +91,20 @@ export const ScrollToFuture = ({
                         left: rect.left,
                         width: rect.width,
                         height: rect.height,
+
+                        clipPath: `inset(
+            ${rect.clipTop}px
+            ${rect.clipRight}px
+            ${rect.clipBottom}px
+            ${rect.clipLeft}px
+        )`,
+
+                        WebkitClipPath: `inset(
+            ${rect.clipTop}px
+            ${rect.clipRight}px
+            ${rect.clipBottom}px
+            ${rect.clipLeft}px
+        )`,
                     }}
                 >
                     {showY && (
@@ -92,7 +114,7 @@ export const ScrollToFuture = ({
                             target={findedTarget}
                             metrics={metrics.y}
                             scrollBar={config.scrollBar!}
-                            thumb={thumb}
+                            thumb={config.thumb}
                             positionMode={positionMode}
                             superimposition={superimposition}
                             hasCrossAxis={showX}
@@ -106,7 +128,7 @@ export const ScrollToFuture = ({
                             target={findedTarget}
                             metrics={metrics.x}
                             scrollBar={config.scrollBar!}
-                            thumb={thumb}
+                            thumb={config.thumb}
                             positionMode={positionMode}
                             superimposition={superimposition}
                             hasCrossAxis={showY}
