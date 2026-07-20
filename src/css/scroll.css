@@ -1,12 +1,8 @@
 .scroll-to-future__overlay {
     position: fixed;
-
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-
     pointer-events: none;
     overflow: visible;
-
-    z-index: var(--scroll-to-future-z-index, 100);
 }
