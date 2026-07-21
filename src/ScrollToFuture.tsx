@@ -58,11 +58,6 @@ export const ScrollToFuture = ({
         nativeOnMobile,
     });
 
-    console.log({
-        target: findedTarget?.getBoundingClientRect().left,
-        overlay: rect.left,
-    });
-
     if (!mounted || nativeScrollOnMobile) {
         return null;
     }
