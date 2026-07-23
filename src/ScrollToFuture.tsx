@@ -1,4 +1,6 @@
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
 import { ScrollAxis } from "./components/Axios/ScrollAxis";
 import "./css/axis.css";
 import "./css/scroll.css";
@@ -10,7 +12,6 @@ import { useTargetRect } from "./hooks/useTargetRect";
 import type { ScrollToFutureInterface } from "./types/scroll-to-future.type";
 import { merge } from "./utils/merge";
 import { shouldUseNativeScrollbar } from "./utils/mobile-detect";
-
 import { variables } from "./utils/variables-css";
 
 export const ScrollToFuture = ({
@@ -23,22 +24,37 @@ export const ScrollToFuture = ({
 }: ScrollToFutureInterface) => {
     const anchorRef = useRef<HTMLSpanElement | null>(null);
     const targetRef = useRef<HTMLElement | null>(null);
+
     const mounted = useMounted();
+
     const [findedTarget, setFindedTarget] = useState<HTMLElement | null>(null);
 
-    const config = merge({ scrollBar, thumb, selectTheme, optionsTheme });
+    const config = merge({
+        scrollBar,
+        thumb,
+        selectTheme,
+        optionsTheme,
+    });
+
     const vars = variables(config.optionsTheme);
+
     const mode = config.scrollBar?.mode ?? "both";
     const positionMode = config.scrollBar?.positionMode ?? "after";
+
     const superimposition = config.scrollBar?.superimposition ?? "over";
+
     const nativeScrollOnMobile = shouldUseNativeScrollbar() && nativeOnMobile;
 
     const metrics = useElementScrollObserver(findedTarget);
     const rect = useTargetRect(findedTarget);
+
     const wantsY = mode === "vertical" || mode === "both";
+
     const wantsX = mode === "horizontal" || mode === "both";
+
     const showY = wantsY && metrics.y.canScroll;
     const showX = wantsX && metrics.x.canScroll;
+
     const coversAllScrollableAxes =
         (!metrics.x.canScroll || showX) && (!metrics.y.canScroll || showY);
 
@@ -68,6 +84,60 @@ export const ScrollToFuture = ({
         rect.height > 0 &&
         rect.isVisible;
 
+    const overlay = canRenderOverlay ? (
+        <div
+            className="scroll-to-future__overlay"
+            style={{
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                height: rect.height,
+
+                clipPath: `inset(
+                    ${rect.clipTop}px
+                    ${rect.clipRight}px
+                    ${rect.clipBottom}px
+                    ${rect.clipLeft}px
+                )`,
+
+                WebkitClipPath: `inset(
+                    ${rect.clipTop}px
+                    ${rect.clipRight}px
+                    ${rect.clipBottom}px
+                    ${rect.clipLeft}px
+                )`,
+            }}
+        >
+            {showY && (
+                <ScrollAxis
+                    vars={vars}
+                    axis="y"
+                    target={findedTarget}
+                    metrics={metrics.y}
+                    scrollBar={config.scrollBar!}
+                    thumb={config.thumb}
+                    positionMode={positionMode}
+                    superimposition={superimposition}
+                    hasCrossAxis={showX}
+                />
+            )}
+
+            {showX && (
+                <ScrollAxis
+                    vars={vars}
+                    axis="x"
+                    target={findedTarget}
+                    metrics={metrics.x}
+                    scrollBar={config.scrollBar!}
+                    thumb={config.thumb}
+                    positionMode={positionMode}
+                    superimposition={superimposition}
+                    hasCrossAxis={showY}
+                />
+            )}
+        </div>
+    ) : null;
+
     return (
         <>
             {!target && (
@@ -78,59 +148,7 @@ export const ScrollToFuture = ({
                 />
             )}
 
-            {canRenderOverlay && (
-                <div
-                    className="scroll-to-future__overlay"
-                    style={{
-                        top: rect.top,
-                        left: rect.left,
-                        width: rect.width,
-                        height: rect.height,
-
-                        clipPath: `inset(
-            ${rect.clipTop}px
-            ${rect.clipRight}px
-            ${rect.clipBottom}px
-            ${rect.clipLeft}px
-        )`,
-
-                        WebkitClipPath: `inset(
-            ${rect.clipTop}px
-            ${rect.clipRight}px
-            ${rect.clipBottom}px
-            ${rect.clipLeft}px
-        )`,
-                    }}
-                >
-                    {showY && (
-                        <ScrollAxis
-                            vars={vars}
-                            axis="y"
-                            target={findedTarget}
-                            metrics={metrics.y}
-                            scrollBar={config.scrollBar!}
-                            thumb={config.thumb}
-                            positionMode={positionMode}
-                            superimposition={superimposition}
-                            hasCrossAxis={showX}
-                        />
-                    )}
-
-                    {showX && (
-                        <ScrollAxis
-                            vars={vars}
-                            axis="x"
-                            target={findedTarget}
-                            metrics={metrics.x}
-                            scrollBar={config.scrollBar!}
-                            thumb={config.thumb}
-                            positionMode={positionMode}
-                            superimposition={superimposition}
-                            hasCrossAxis={showY}
-                        />
-                    )}
-                </div>
-            )}
+            {overlay && createPortal(overlay, document.body)}
         </>
     );
 };
