@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.18] - 2026-08-10
+
+### Added
+
+- Added optional className support for scrollbar and thumb.
+- className now takes precedence over per-element style options and the selected theme.
+
 ## [1.0.17] - 2026-08-09
 
 ### Fixed bugs
