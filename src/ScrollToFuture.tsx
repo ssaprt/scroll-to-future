@@ -12,6 +12,7 @@ import { useTargetRect } from "./hooks/useTargetRect";
 import type { ScrollToFutureInterface } from "./types/scroll-to-future.type";
 import { merge } from "./utils/merge";
 import { shouldUseNativeScrollbar } from "./utils/mobile-detect";
+import { isPageScrollTarget } from "./utils/helper";
 import { variables } from "./utils/variables-css";
 
 export const ScrollToFuture = ({
@@ -73,14 +74,29 @@ export const ScrollToFuture = ({
         nativeOnMobile,
     });
 
-    useTargetRect(findedTarget, overlayRef);
+    const placement = findedTarget && !isPageScrollTarget(findedTarget)
+        ? "local"
+        : "fixed";
+    const portalTarget =
+        !mounted || !findedTarget
+            ? null
+            : placement === "local"
+              ? findedTarget.parentElement
+              : document.body;
+    const overlayEnabled = Boolean(findedTarget && portalTarget);
+
+    useTargetRect(findedTarget, portalTarget, overlayRef, placement, overlayEnabled);
 
     if (!mounted || nativeScrollOnMobile) {
         return null;
     }
 
-    const overlay = findedTarget ? (
-        <div ref={overlayRef} className="scroll-to-future__overlay">
+    const overlay = findedTarget && overlayEnabled ? (
+        <div
+            ref={overlayRef}
+            className={`scroll-to-future__overlay ${placement === "fixed" ? "scroll-to-future__overlay--fixed" : "scroll-to-future__overlay--local"}`}
+            data-scroll-to-future-overlay=""
+        >
             {showY && (
                 <ScrollAxis
                     vars={vars}
@@ -123,7 +139,7 @@ export const ScrollToFuture = ({
                 />
             )}
 
-            {overlay && createPortal(overlay, document.body)}
+            {overlay && portalTarget && createPortal(overlay, portalTarget)}
         </>
     );
 };

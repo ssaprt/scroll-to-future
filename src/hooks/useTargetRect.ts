@@ -1,83 +1,179 @@
 import { type RefObject, useLayoutEffect } from "react";
-import { isPageScrollTarget } from "../utils/helper";
+
+const hostPositionRecords = new WeakMap<HTMLElement, { count: number; changed: boolean; originalInlinePosition: string }>();
+
+const retainPositionedHost = (host: HTMLElement) => {
+    const currentRecord = hostPositionRecords.get(host);
+
+    if (currentRecord) {
+        currentRecord.count += 1;
+        return () => {
+            currentRecord.count -= 1;
+            if (currentRecord.count > 0) {
+                return;
+            }
+            if (currentRecord.changed && host.style.position === "relative") {
+                host.style.position = currentRecord.originalInlinePosition;
+            }
+            hostPositionRecords.delete(host);
+        };
+    }
+
+    const originalInlinePosition = host.style.position;
+    const computedPosition = window.getComputedStyle(host).position;
+    const changed = computedPosition === "static";
+
+    if (changed) {
+        host.style.position = "relative";
+    }
+
+    const record = {
+        count: 1,
+        changed,
+        originalInlinePosition,
+    };
+
+    hostPositionRecords.set(host, record);
+
+    return () => {
+        record.count -= 1;
+        if (record.count > 0) {
+            return;
+        }
+        if (record.changed && host.style.position === "relative") {
+            host.style.position = record.originalInlinePosition;
+        }
+        hostPositionRecords.delete(host);
+    };
+};
 
 export const useTargetRect = (
     target: HTMLElement | null,
+    portalHost: HTMLElement | null,
     overlayRef: RefObject<HTMLDivElement | null>,
+    placement: "fixed" | "local",
+    enabled: boolean,
 ): void => {
     useLayoutEffect(() => {
-        if (!target) return;
+        if (!enabled || !target) {
+            return;
+        }
+
+        if (placement === "local" && !portalHost) {
+            return;
+        }
+
+        const releaseHostPosition =
+            placement === "local" && portalHost ? retainPositionedHost(portalHost) : () => {};
+
+        let rafId: number | null = null;
 
         const updatePosition = () => {
             const overlay = overlayRef.current;
 
-            if (!overlay) return;
-
-            if (isPageScrollTarget(target)) {
-                const width = window.visualViewport?.width ?? window.innerWidth;
-
-                const height =
-                    window.visualViewport?.height ?? window.innerHeight;
-
-                overlay.style.transform = "translate3d(0, 0, 0)";
-
-                overlay.style.width = `${width}px`;
-                overlay.style.height = `${height}px`;
-                overlay.style.visibility = "visible";
-
+            if (!overlay) {
                 return;
             }
 
-            const rect = target.getBoundingClientRect();
+            if (placement === "local") {
+                if (!portalHost) {
+                    return;
+                }
 
-            overlay.style.transform = `translate3d(${rect.left}px, ${rect.top}px, 0)`;
+                const targetRect = target.getBoundingClientRect();
+                const hostRect = portalHost.getBoundingClientRect();
+                const left =
+                    targetRect.left -
+                    hostRect.left -
+                    portalHost.clientLeft +
+                    portalHost.scrollLeft +
+                    target.clientLeft;
+                const top =
+                    targetRect.top -
+                    hostRect.top -
+                    portalHost.clientTop +
+                    portalHost.scrollTop +
+                    target.clientTop;
+                const width = target.clientWidth;
+                const height = target.clientHeight;
 
-            overlay.style.width = `${rect.width}px`;
-            overlay.style.height = `${rect.height}px`;
+                overlay.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+                overlay.style.width = `${width}px`;
+                overlay.style.height = `${height}px`;
+                overlay.style.visibility =
+                    width > 0 && height > 0 ? "visible" : "hidden";
+                return;
+            }
 
-            overlay.style.visibility =
-                rect.width > 0 && rect.height > 0 ? "visible" : "hidden";
+            const viewport = window.visualViewport;
+            const width = viewport?.width ?? window.innerWidth;
+            const height = viewport?.height ?? window.innerHeight;
+            const left = viewport?.offsetLeft ?? 0;
+            const top = viewport?.offsetTop ?? 0;
+
+            overlay.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+            overlay.style.width = `${width}px`;
+            overlay.style.height = `${height}px`;
+            overlay.style.visibility = width > 0 && height > 0 ? "visible" : "hidden";
         };
 
-        window.addEventListener("scroll", updatePosition, {
-            capture: true,
-            passive: true,
-        });
+        const scheduleUpdate = () => {
+            if (rafId !== null) {
+                return;
+            }
+            rafId = window.requestAnimationFrame(() => {
+                rafId = null;
+                updatePosition();
+            });
+        };
 
-        window.addEventListener("resize", updatePosition, {
-            passive: true,
+        const resizeObserver = new ResizeObserver(scheduleUpdate);
+        const mutationObserver = new MutationObserver((mutations) => {
+            const overlay = overlayRef.current;
+            const shouldUpdate = mutations.some((mutation) => {
+                if (!overlay) {
+                    return true;
+                }
+                if (mutation.target === overlay) {
+                    return false;
+                }
+                if (mutation.target instanceof Node && overlay.contains(mutation.target)) {
+                    return false;
+                }
+                return true;
+            });
+            if (shouldUpdate) {
+                scheduleUpdate();
+            }
         });
-
-        window.visualViewport?.addEventListener("scroll", updatePosition, {
-            passive: true,
-        });
-
-        window.visualViewport?.addEventListener("resize", updatePosition, {
-            passive: true,
-        });
-
-        const resizeObserver = new ResizeObserver(updatePosition);
 
         resizeObserver.observe(target);
+        if (portalHost) {
+            resizeObserver.observe(portalHost);
+            mutationObserver.observe(portalHost, {
+                attributes: true,
+                childList: true,
+                subtree: true,
+                attributeFilter: ["class", "style", "hidden"],
+            });
+        }
 
-        updatePosition();
+        window.addEventListener("resize", scheduleUpdate, { passive: true });
+        window.visualViewport?.addEventListener("resize", scheduleUpdate, {
+            passive: true,
+        });
+
+        scheduleUpdate();
 
         return () => {
-            window.removeEventListener("scroll", updatePosition, true);
-
-            window.removeEventListener("resize", updatePosition);
-
-            window.visualViewport?.removeEventListener(
-                "scroll",
-                updatePosition,
-            );
-
-            window.visualViewport?.removeEventListener(
-                "resize",
-                updatePosition,
-            );
-
             resizeObserver.disconnect();
+            mutationObserver.disconnect();
+            releaseHostPosition();
+            window.removeEventListener("resize", scheduleUpdate);
+            window.visualViewport?.removeEventListener("resize", scheduleUpdate);
+            if (rafId !== null) {
+                window.cancelAnimationFrame(rafId);
+            }
         };
-    }, [target, overlayRef]);
+    }, [enabled, overlayRef, placement, portalHost, target]);
 };

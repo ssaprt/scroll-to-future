@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.17] - 2026-08-09
+
+### Fixed bugs
+
+- Fixed scrollbar overlay positioning so it follows the target container instead of always rendering from the viewport/body.
+- The overlay now uses a local portal host for in-block scroll containers and a fixed host for page-scrolling targets.
+
 ## [1.0.16] - 2026-08-09
 
 ### improvement

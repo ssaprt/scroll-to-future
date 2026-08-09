@@ -1,13 +1,20 @@
 .scroll-to-future__overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
     z-index: 9999;
     pointer-events: none;
-    overflow: visible;
+    overflow: hidden;
     visibility: hidden;
     transition: none !important;
     transform: translate3d(0, 0, 0);
     will-change: transform;
     contain: layout style;
+}
+
+.scroll-to-future__overlay--local {
+    position: absolute;
+    inset: 0;
+}
+
+.scroll-to-future__overlay--fixed {
+    position: fixed;
+    inset: 0;
 }
