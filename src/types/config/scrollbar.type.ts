@@ -14,6 +14,7 @@ export type Superimposition = "over" | "after";
 export type HideNativeScrollbarMode = false | "fine-pointer" | "always";
 
 export interface ScrollToFutureScrollBar {
+    className?: string;
     mode?: ScrollBarMode;
     hideNativeScrollbar?: HideNativeScrollbarMode;
     positionMode?: PositionMode;

@@ -5,6 +5,7 @@ export type StatusElementsTheme = {
 };
 
 export type ScrollToFutureGeneralTypes = {
+    className?: string;
     backgroundColor?: string;
     opacity?: number;
     border?: string;

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.16] - 2026-08-09
+
+### improvement
+
+- Added the ability to set custom styles via className
+
 ## [1.0.15] - 2026-08-07
 
 ### Added CHANGELOG

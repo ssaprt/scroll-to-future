@@ -84,6 +84,7 @@ export const ScrollToFuture = ({
             {showY && (
                 <ScrollAxis
                     vars={vars}
+                    theme={config.optionsTheme}
                     axis="y"
                     target={findedTarget}
                     metrics={metrics.y}
@@ -98,6 +99,7 @@ export const ScrollToFuture = ({
             {showX && (
                 <ScrollAxis
                     vars={vars}
+                    theme={config.optionsTheme}
                     axis="x"
                     target={findedTarget}
                     metrics={metrics.x}

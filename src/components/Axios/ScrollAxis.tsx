@@ -7,6 +7,7 @@ import {
     Superimposition,
 } from "src/types/config/scrollbar.type";
 import { ScrollToFutureThumb } from "src/types/config/thumb.type";
+import { ScrollToFutureThemeProps } from "src/types/theme/scroll-to-future.theme.type";
 import { DEFAULT_TRACK_THICKNESS } from "src/utils/constants";
 import {
     clamp,
@@ -30,6 +31,7 @@ interface ScrollAxisProps {
     superimposition: Superimposition;
     hasCrossAxis: boolean;
     vars: Record<string, string>;
+    theme: ScrollToFutureThemeProps;
 }
 
 export const ScrollAxis = ({
@@ -42,6 +44,7 @@ export const ScrollAxis = ({
     superimposition,
     hasCrossAxis,
     vars,
+    theme,
 }: ScrollAxisProps) => {
     const trackRef = useRef<HTMLDivElement>(null);
     //* REFS ====================================================================
@@ -53,6 +56,12 @@ export const ScrollAxis = ({
 
     //* STATE ===================================================================
     const [isDragging, setIsDragging] = useState(false);
+
+    const [isTrackHovered, setIsTrackHovered] = useState(false);
+
+    const [isTrackActive, setIsTrackActive] = useState(false);
+
+    const [isThumbHovered, setIsThumbHovered] = useState(false);
     //* STATE ===================================================================
 
     //* COMPUTED PROPERTIES =====================================================
@@ -326,24 +335,72 @@ export const ScrollAxis = ({
               };
     //* STYLES ==================================================================
 
+    const scrollBarStateClassName = isTrackActive
+        ? theme.scrollBar?.active?.className
+        : isTrackHovered
+          ? theme.scrollBar?.hover?.className
+          : theme.scrollBar?.inactive?.className;
+
+    const thumbStateClassName = isDragging
+        ? theme.thumb?.active?.className
+        : isThumbHovered
+          ? theme.thumb?.hover?.className
+          : theme.thumb?.inactive?.className;
+
     //* JSX =====================================================================
     return (
         <div
             ref={trackRef}
-            className="scroll-to-future__track"
+            className={[
+                "scroll-to-future__track",
+                scrollBar.className,
+                scrollBarStateClassName,
+            ]
+                .filter(Boolean)
+                .join(" ")}
             style={{ ...trackStyle, ...vars }}
-            //eslint-disable-next-line
-            onPointerDown={handleTrackPointerDown}
+            onPointerEnter={() => {
+                setIsTrackHovered(true);
+            }}
+            onPointerLeave={() => {
+                setIsTrackHovered(false);
+                setIsTrackActive(false);
+            }}
+            onPointerDown={(event) => {
+                if (event.target === event.currentTarget) {
+                    setIsTrackActive(true);
+                }
+
+                handleTrackPointerDown(event);
+            }}
+            onPointerUp={() => {
+                setIsTrackActive(false);
+            }}
+            onPointerCancel={() => {
+                setIsTrackActive(false);
+            }}
             data-axis={axis}
             data-superimposition={superimposition}
         >
             <div
-                className={`scroll-to-future__thumb ${
-                    isDragging ? "scroll-to-future__thumb--dragging" : ""
-                }`.trim()}
+                className={[
+                    "scroll-to-future__thumb",
+                    isDragging
+                        ? "scroll-to-future__thumb--dragging"
+                        : undefined,
+                    thumb.className,
+                    thumbStateClassName,
+                ]
+                    .filter(Boolean)
+                    .join(" ")}
                 style={thumbStyle}
+                onPointerEnter={() => {
+                    setIsThumbHovered(true);
+                }}
+                onPointerLeave={() => {
+                    setIsThumbHovered(false);
+                }}
                 onPointerDown={handleThumbPointerDown}
-                //eslint-disable-next-line
                 onPointerMove={handleThumbPointerMove}
                 onPointerUp={stopDrag}
                 onPointerCancel={stopDrag}

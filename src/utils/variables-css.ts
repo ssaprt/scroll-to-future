@@ -19,11 +19,15 @@ export const variables = (theme: ScrollToFutureThemeProps) => {
             const statusPrefix = status === "inactive" ? "" : `-${status}`;
 
             for (const prop in properties) {
+                if (prop === "className") {
+                    continue;
+                }
+
                 const value = properties[prop as keyof typeof properties];
 
                 if (value === undefined) continue;
 
-                styles[`--${type}${statusPrefix}-${prop}`] = value as string;
+                styles[`--${type}${statusPrefix}-${prop}`] = String(value);
             }
         }
     }

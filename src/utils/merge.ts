@@ -13,6 +13,20 @@ export interface MergedConfig {
     optionsTheme: ScrollToFutureThemeProps;
 }
 
+const mergeClassNames = (
+    ...classNames: Array<string | undefined>
+): string | undefined => {
+    const result = classNames
+        .flatMap((className) => className?.trim().split(/\s+/) ?? [])
+        .filter(Boolean)
+        .filter((className, index, array) => {
+            return array.indexOf(className) === index;
+        })
+        .join(" ");
+
+    return result || undefined;
+};
+
 export const merge = (config: Config): MergedConfig => {
     const selectedTheme =
         presets[config.selectTheme ?? defaultConfig.selectTheme];
@@ -21,11 +35,21 @@ export const merge = (config: Config): MergedConfig => {
         scrollBar: {
             ...defaultConfig.scrollBar,
             ...config.scrollBar,
+            className: mergeClassNames(
+                defaultConfig.scrollBar.className,
+                config.scrollBar?.className,
+            ),
         },
+
         thumb: {
             ...defaultConfig.thumb,
             ...config.thumb,
+            className: mergeClassNames(
+                defaultConfig.thumb.className,
+                config.thumb?.className,
+            ),
         },
+
         optionsTheme: themeMerge(selectedTheme, config.optionsTheme),
     };
 };
@@ -48,6 +72,15 @@ export const themeMerge = <T extends PlainObject>(
         const baseValue = base[key];
 
         if (overrideValue === undefined) continue;
+
+        if (key === "className" && typeof overrideValue === "string") {
+            result[key as string] = mergeClassNames(
+                typeof baseValue === "string" ? baseValue : undefined,
+                overrideValue,
+            );
+
+            continue;
+        }
 
         if (isPlainObject(overrideValue) && isPlainObject(baseValue)) {
             result[key as string] = themeMerge(
