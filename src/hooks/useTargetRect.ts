@@ -1,6 +1,9 @@
 import { type RefObject, useLayoutEffect } from "react";
 
-const hostPositionRecords = new WeakMap<HTMLElement, { count: number; changed: boolean; originalInlinePosition: string }>();
+const hostPositionRecords = new WeakMap<
+    HTMLElement,
+    { count: number; changed: boolean; originalInlinePosition: string }
+>();
 
 const retainPositionedHost = (host: HTMLElement) => {
     const currentRecord = hostPositionRecords.get(host);
@@ -64,7 +67,9 @@ export const useTargetRect = (
         }
 
         const releaseHostPosition =
-            placement === "local" && portalHost ? retainPositionedHost(portalHost) : () => {};
+            placement === "local" && portalHost
+                ? retainPositionedHost(portalHost)
+                : () => {};
 
         let rafId: number | null = null;
 
@@ -114,7 +119,8 @@ export const useTargetRect = (
             overlay.style.transform = `translate3d(${left}px, ${top}px, 0)`;
             overlay.style.width = `${width}px`;
             overlay.style.height = `${height}px`;
-            overlay.style.visibility = width > 0 && height > 0 ? "visible" : "hidden";
+            overlay.style.visibility =
+                width > 0 && height > 0 ? "visible" : "hidden";
         };
 
         const scheduleUpdate = () => {
@@ -137,7 +143,10 @@ export const useTargetRect = (
                 if (mutation.target === overlay) {
                     return false;
                 }
-                if (mutation.target instanceof Node && overlay.contains(mutation.target)) {
+                if (
+                    mutation.target instanceof Node &&
+                    overlay.contains(mutation.target)
+                ) {
                     return false;
                 }
                 return true;
@@ -170,7 +179,10 @@ export const useTargetRect = (
             mutationObserver.disconnect();
             releaseHostPosition();
             window.removeEventListener("resize", scheduleUpdate);
-            window.visualViewport?.removeEventListener("resize", scheduleUpdate);
+            window.visualViewport?.removeEventListener(
+                "resize",
+                scheduleUpdate,
+            );
             if (rafId !== null) {
                 window.cancelAnimationFrame(rafId);
             }

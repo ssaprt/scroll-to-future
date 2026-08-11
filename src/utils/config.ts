@@ -20,4 +20,5 @@ export const defaultConfig: Required<Omit<ScrollToFutureInterface, "target">> =
 
         selectTheme: "primary",
         optionsTheme: {},
+        overlayHide: false,
     };

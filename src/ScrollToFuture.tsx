@@ -10,9 +10,9 @@ import { useFuture } from "./hooks/useFuture";
 import { useMounted } from "./hooks/useMounted";
 import { useTargetRect } from "./hooks/useTargetRect";
 import type { ScrollToFutureInterface } from "./types/scroll-to-future.type";
+import { isPageScrollTarget } from "./utils/helper";
 import { merge } from "./utils/merge";
 import { shouldUseNativeScrollbar } from "./utils/mobile-detect";
-import { isPageScrollTarget } from "./utils/helper";
 import { variables } from "./utils/variables-css";
 
 export const ScrollToFuture = ({
@@ -22,6 +22,7 @@ export const ScrollToFuture = ({
     selectTheme = "primary",
     optionsTheme = {},
     nativeOnMobile = true,
+    overlayHide = false,
 }: ScrollToFutureInterface) => {
     const anchorRef = useRef<HTMLSpanElement | null>(null);
     const targetRef = useRef<HTMLElement | null>(null);
@@ -74,9 +75,8 @@ export const ScrollToFuture = ({
         nativeOnMobile,
     });
 
-    const placement = findedTarget && !isPageScrollTarget(findedTarget)
-        ? "local"
-        : "fixed";
+    const placement =
+        findedTarget && !isPageScrollTarget(findedTarget) ? "local" : "fixed";
     const portalTarget =
         !mounted || !findedTarget
             ? null
@@ -85,49 +85,56 @@ export const ScrollToFuture = ({
               : document.body;
     const overlayEnabled = Boolean(findedTarget && portalTarget);
 
-    useTargetRect(findedTarget, portalTarget, overlayRef, placement, overlayEnabled);
+    useTargetRect(
+        findedTarget,
+        portalTarget,
+        overlayRef,
+        placement,
+        overlayEnabled,
+    );
 
     if (!mounted || nativeScrollOnMobile) {
         return null;
     }
 
-    const overlay = findedTarget && overlayEnabled ? (
-        <div
-            ref={overlayRef}
-            className={`scroll-to-future__overlay ${placement === "fixed" ? "scroll-to-future__overlay--fixed" : "scroll-to-future__overlay--local"}`}
-            data-scroll-to-future-overlay=""
-        >
-            {showY && (
-                <ScrollAxis
-                    vars={vars}
-                    theme={config.optionsTheme}
-                    axis="y"
-                    target={findedTarget}
-                    metrics={metrics.y}
-                    scrollBar={config.scrollBar}
-                    thumb={config.thumb}
-                    positionMode={positionMode}
-                    superimposition={superimposition}
-                    hasCrossAxis={showX}
-                />
-            )}
+    const overlay =
+        findedTarget && overlayEnabled ? (
+            <div
+                ref={overlayRef}
+                className={`scroll-to-future__overlay ${placement === "fixed" ? "scroll-to-future__overlay--fixed" : "scroll-to-future__overlay--local"}`}
+                data-scroll-to-future-overlay=""
+            >
+                {showY && (
+                    <ScrollAxis
+                        vars={vars}
+                        theme={config.optionsTheme}
+                        axis="y"
+                        target={findedTarget}
+                        metrics={metrics.y}
+                        scrollBar={config.scrollBar}
+                        thumb={config.thumb}
+                        positionMode={positionMode}
+                        superimposition={superimposition}
+                        hasCrossAxis={showX}
+                    />
+                )}
 
-            {showX && (
-                <ScrollAxis
-                    vars={vars}
-                    theme={config.optionsTheme}
-                    axis="x"
-                    target={findedTarget}
-                    metrics={metrics.x}
-                    scrollBar={config.scrollBar}
-                    thumb={config.thumb}
-                    positionMode={positionMode}
-                    superimposition={superimposition}
-                    hasCrossAxis={showY}
-                />
-            )}
-        </div>
-    ) : null;
+                {showX && (
+                    <ScrollAxis
+                        vars={vars}
+                        theme={config.optionsTheme}
+                        axis="x"
+                        target={findedTarget}
+                        metrics={metrics.x}
+                        scrollBar={config.scrollBar}
+                        thumb={config.thumb}
+                        positionMode={positionMode}
+                        superimposition={superimposition}
+                        hasCrossAxis={showY}
+                    />
+                )}
+            </div>
+        ) : null;
 
     return (
         <>
