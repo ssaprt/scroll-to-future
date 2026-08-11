@@ -22,7 +22,6 @@ export const ScrollToFuture = ({
     selectTheme = "primary",
     optionsTheme = {},
     nativeOnMobile = true,
-    overlayHide = false,
 }: ScrollToFutureInterface) => {
     const anchorRef = useRef<HTMLSpanElement | null>(null);
     const targetRef = useRef<HTMLElement | null>(null);

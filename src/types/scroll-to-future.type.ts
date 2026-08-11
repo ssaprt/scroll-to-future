@@ -10,7 +10,6 @@ export interface ScrollToFutureInterface {
     selectTheme?: PresetsThemeType;
     optionsTheme?: ScrollToFutureThemeProps;
     nativeOnMobile?: boolean;
-    overlayHide?: boolean;
 }
 
 export type ScrollToFutureConfig = Omit<ScrollToFutureInterface, "target">;
