@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.19] - 2026-08-10
+
+### Delete comments
+
+- Delete comments
+
 ## [1.0.18] - 2026-08-10
 
 ### Added
