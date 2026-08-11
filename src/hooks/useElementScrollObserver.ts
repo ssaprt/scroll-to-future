@@ -72,10 +72,6 @@ export const useElementScrollObserver = (
                 const clientHeight =
                     window.visualViewport?.height ?? window.innerHeight;
 
-                /*
-                 * Важно: не читаем только window.scrollY.
-                 * body может быть самостоятельным overflow-контейнером.
-                 */
                 const scrollLeft = getActualScrollPosition(
                     window.scrollX,
                     root.scrollLeft,
